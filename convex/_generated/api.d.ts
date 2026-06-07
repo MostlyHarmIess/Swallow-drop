@@ -8,13 +8,21 @@
  * @module
  */
 
+import type * as claims from "../claims.js";
+import type * as drops from "../drops.js";
+import type * as presence from "../presence.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  claims: typeof claims;
+  drops: typeof drops;
+  presence: typeof presence;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
