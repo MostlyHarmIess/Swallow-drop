@@ -11,6 +11,8 @@
 import type * as claims from "../claims.js";
 import type * as drops from "../drops.js";
 import type * as presence from "../presence.js";
+import type * as transferHistory from "../transferHistory.js";
+import type * as webrtc from "../webrtc.js";
 
 import type {
   ApiFromModules,
@@ -22,6 +24,8 @@ declare const fullApi: ApiFromModules<{
   claims: typeof claims;
   drops: typeof drops;
   presence: typeof presence;
+  transferHistory: typeof transferHistory;
+  webrtc: typeof webrtc;
 }>;
 
 /**

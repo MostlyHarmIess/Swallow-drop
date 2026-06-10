@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server"
-import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
 export default defineSchema({
   drops: defineTable({
@@ -11,19 +11,28 @@ export default defineSchema({
     fileCount: v.number(),
     senderName: v.string(),
     senderSessionId: v.string(),
+    slotId: v.number(), // Which slot (0-5 for a 2x3 grid)
     status: v.union(v.literal("available"), v.literal("offline")),
   }),
 
   claims: defineTable({
     dropId: v.id("drops"),
+    senderSessionId: v.string(),
     claimantName: v.string(),
     claimantSession: v.string(),
     status: v.union(
       v.literal("pending"),
       v.literal("transferring"),
       v.literal("complete"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
+  }),
+
+  signaling: defineTable({
+    fromSessionId: v.string(),
+    toSessionId: v.string(),
+    message: v.string(),
+    createdAt: v.number(),
   }),
 
   presence: defineTable({
@@ -32,4 +41,11 @@ export default defineSchema({
     lastSeen: v.number(),
     sessionId: v.string(),
   }),
-})
+
+  transferHistory: defineTable({
+    fileName: v.string(),
+    from: v.string(),
+    to: v.string(),
+    createdAt: v.number(),
+  }),
+});

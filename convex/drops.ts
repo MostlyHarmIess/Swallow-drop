@@ -1,5 +1,5 @@
-import { mutation, query } from "./_generated/server"
-import { v } from "convex/values"
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
 
 export const list = query({
   args: {},
@@ -7,9 +7,9 @@ export const list = query({
     return await ctx.db
       .query("drops")
       .filter((q) => q.eq(q.field("status"), "available"))
-      .collect()
+      .collect();
   },
-})
+});
 
 export const create = mutation({
   args: {
@@ -21,14 +21,15 @@ export const create = mutation({
     fileCount: v.number(),
     senderName: v.string(),
     senderSessionId: v.string(),
+    slotId: v.number(),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("drops", {
       ...args,
       status: "available",
-    })
+    });
   },
-})
+});
 
 export const markOffline = mutation({
   args: { senderSessionId: v.string() },
@@ -36,10 +37,10 @@ export const markOffline = mutation({
     const drops = await ctx.db
       .query("drops")
       .filter((q) => q.eq(q.field("senderSessionId"), args.senderSessionId))
-      .collect()
+      .collect();
 
     for (const drop of drops) {
-      await ctx.db.patch(drop._id, { status: "offline" })
+      await ctx.db.patch(drop._id, { status: "offline" });
     }
   },
-})
+});
