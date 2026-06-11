@@ -9,11 +9,12 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const drop = await ctx.db.get(args.dropId);
+    if (!drop) throw new Error("Drop not found");
 
     return await ctx.db.insert("claims", {
-      ...args,
-      senderSessionId: drop?.senderSessionId || "",
-      status: "pending",
+    ...args,
+    senderSessionId: drop.senderSessionId,
+    status: "pending",
     });
   },
 });

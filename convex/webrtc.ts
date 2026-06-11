@@ -1,10 +1,9 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-/**
- * WebRTC Signaling
- * Relays connection negotiation messages between peers
- */
+
+// WebRTC Signaling
+
 export const sendSignaling = mutation({
   args: {
     fromSessionId: v.string(),

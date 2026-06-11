@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NamePicker from "./components/ui/NamePicker";
+import NamePicker from "./components/NamePicker";
 import Dashboard from "./pages/Dashboard";
 
 type Identity = {

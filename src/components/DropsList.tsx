@@ -42,7 +42,6 @@ export default function DropsList({ drops, identity }: DropsListProps) {
     }
   };
 
-  // Filter out the user's own drops - only show others' files
   const otherDrops = drops.filter(
     (drop) => drop.senderSessionId !== identity.sessionId,
   );

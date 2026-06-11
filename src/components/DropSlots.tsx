@@ -14,7 +14,7 @@ type DropSlotsProps = {
   onClaim: (dropId: string) => void;
 };
 
-const TOTAL_SLOTS = 12; // more slots for multiple shared files
+const TOTAL_SLOTS = 12; 
 const SLOT_LAYOUTS = [
   "md:col-span-2 md:row-span-2",
   "md:row-span-2",
@@ -57,7 +57,6 @@ export default function DropSlots({
   identity,
   onClaim,
 }: DropSlotsProps) {
-  // Create a map of slot -> drop
   const slotMap: Record<number, Drop | undefined> = {};
   drops.forEach((drop) => {
     slotMap[drop.slotId] = drop;
@@ -72,7 +71,6 @@ export default function DropSlots({
         return (
           <div key={slotId} className={`${SLOT_LAYOUTS[slotId]} h-full`}>
             {drop ? (
-              // Occupied slot
               <div
                 className="h-full rounded-lg border-2 p-2 flex flex-col justify-between hover:shadow-2xl hover:shadow-slate-950 transition-shadow cursor-pointer"
                 style={{

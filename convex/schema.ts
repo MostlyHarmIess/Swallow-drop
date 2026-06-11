@@ -11,7 +11,7 @@ export default defineSchema({
     fileCount: v.number(),
     senderName: v.string(),
     senderSessionId: v.string(),
-    slotId: v.number(), // Which slot (0-5 for a 2x3 grid)
+    slotId: v.number(),
     status: v.union(v.literal("available"), v.literal("offline")),
   }),
 

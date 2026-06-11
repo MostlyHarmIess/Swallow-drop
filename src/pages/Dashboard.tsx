@@ -59,7 +59,6 @@ export default function Dashboard({ identity }: DashboardProps) {
     downloadReceivedFile(file);
   });
 
-  // Sync presence: tell the server we're online
   useEffect(() => {
     upsertPresence({
       name: identity.name,
@@ -67,7 +66,6 @@ export default function Dashboard({ identity }: DashboardProps) {
       sessionId: identity.sessionId,
     });
 
-    // Update presence every 15 seconds to keep alive
     const interval = setInterval(() => {
       upsertPresence({
         name: identity.name,
@@ -76,7 +74,6 @@ export default function Dashboard({ identity }: DashboardProps) {
       });
     }, 15000);
 
-    // Clean up on disconnect
     return () => {
       clearInterval(interval);
       removePresence({ sessionId: identity.sessionId });
@@ -84,7 +81,6 @@ export default function Dashboard({ identity }: DashboardProps) {
     };
   }, [identity, upsertPresence, removePresence, markDropsOffline]);
 
-  // Handle files dropped on a slot
   useEffect(() => {
     const handleFilesDropped = async (event: Event) => {
       const customEvent = event as FilesDroppedEvent;
@@ -229,7 +225,8 @@ export default function Dashboard({ identity }: DashboardProps) {
                       Latest transfer
                     </div>
                     <div>
-                      {transferHistory[0].fileName} — {transferHistory[0].from} → {transferHistory[0].to}
+                      {transferHistory[0].fileName} — {transferHistory[0].from}{" "}
+                      → {transferHistory[0].to}
                     </div>
                   </div>
                 )}

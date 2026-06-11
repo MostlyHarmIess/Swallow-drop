@@ -18,7 +18,6 @@ export function useWebRTC(
     sessionId,
   });
 
-  // Create a new peer connection
   const createPeerConnection = useCallback(
     (peerId: string) => {
       if (peersRef.current.has(peerId)) {
@@ -47,7 +46,6 @@ export function useWebRTC(
     [sessionId, sendSignaling, onFileReceived],
   );
 
-  // Handle incoming signaling message
   const handleSignalingMessage = useCallback(
     async (fromSessionId: string, message: SignalingMessage) => {
       let peer = peersRef.current.get(fromSessionId);
@@ -97,13 +95,11 @@ export function useWebRTC(
     void processMessages();
   }, [signalingMessages, handleSignalingMessage, consumeMessage]);
 
-  // Initiate file transfer
   const sendFile = useCallback(
     async (peerId: string, file: File) => {
       const peer = createPeerConnection(peerId);
 
       try {
-        // Create offer to start connection
         const offer = await peer.createOffer();
         await sendSignaling({
           fromSessionId: sessionId,
@@ -124,7 +120,6 @@ export function useWebRTC(
     [createPeerConnection, sessionId, sendSignaling],
   );
 
-  // Clean up connections
   const closePeerConnection = useCallback((peerId: string) => {
     const peer = peersRef.current.get(peerId);
     if (peer) {

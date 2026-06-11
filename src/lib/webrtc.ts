@@ -74,7 +74,6 @@ export class PeerConnection {
           this.reconstructFile();
         }
       } else if (event.data instanceof ArrayBuffer) {
-        // Receiving file chunk
         this.fileChunks.push(new Uint8Array(event.data));
       }
     };
@@ -88,9 +87,7 @@ export class PeerConnection {
     };
   }
 
-  // Sender side: create the offer
   async createOffer() {
-    // Create data channel for file transfer
     if (!this.dataChannel) {
       this.dataChannel = this.pc.createDataChannel("file-transfer", {
         ordered: true,
@@ -103,7 +100,6 @@ export class PeerConnection {
     return offer;
   }
 
-  // Receiver side: handle the offer and create answer
   async handleOffer(offer: RTCSessionDescriptionInit) {
     await this.pc.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await this.pc.createAnswer();
@@ -111,7 +107,6 @@ export class PeerConnection {
     return answer;
   }
 
-  // Sender side: handle the answer
   async handleAnswer(answer: RTCSessionDescriptionInit) {
     await this.pc.setRemoteDescription(new RTCSessionDescription(answer));
   }
@@ -197,7 +192,6 @@ export class PeerConnection {
   }
 }
 
-// Signaling message types for exchanging connection info
 export type SignalingMessage =
   | { type: "offer"; offer: RTCSessionDescriptionInit }
   | { type: "answer"; answer: RTCSessionDescriptionInit }
