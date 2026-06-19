@@ -218,17 +218,6 @@ export default function Dashboard({ identity }: DashboardProps) {
             {((transferHistory?.length || 0) == 0 ||
               receivedFiles.length > 0) && (
               <div className="space-y-2 mb-4">
-                {transferHistory && transferHistory.length > 0 && (
-                  <div className="rounded-2xl bg-slate-800 p-3 text-sm text-slate-300">
-                    <div className="font-medium text-slate-100 mb-2">
-                      Latest transfer
-                    </div>
-                    <div>
-                      {transferHistory[0].fileName} — {transferHistory[0].from}{" "}
-                      → {transferHistory[0].to}
-                    </div>
-                  </div>
-                )}
                 {receivedFiles.length > 0 && (
                   <div className="rounded-2xl bg-slate-800 p-3 text-sm text-slate-300">
                     <div className="font-medium text-slate-100 mb-2">
@@ -248,12 +237,6 @@ export default function Dashboard({ identity }: DashboardProps) {
                                 From {from}
                               </p>
                             </div>
-                            <button
-                              onClick={() => downloadReceivedFile(file)}
-                              className="px-3 py-1 bg-slate-700 text-slate-100 rounded-lg text-xs hover:bg-slate-600 transition"
-                            >
-                              Download
-                            </button>
                           </li>
                         ))}
                     </ul>
