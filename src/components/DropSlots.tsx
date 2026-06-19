@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import type { Doc } from "../../convex/_generated/dataModel";
 
 type Drop = Doc<"drops">;
@@ -14,19 +15,18 @@ type DropSlotsProps = {
   onClaim: (dropId: string) => void;
 };
 
-const TOTAL_SLOTS = 12; 
+const TOTAL_SLOTS = 16; 
 const SLOT_LAYOUTS = [
-  "md:col-span-2 md:row-span-2",
+  "md:row-span-2",
   "md:row-span-2",
   "",
   "md:row-span-2",
   "md:col-span-2",
-  "md:col-span-2 md:row-span-2",
+  "md:row-span-2",
+  "md:row-span-2",
   "",
   "md:col-span-1 md:row-span-2",
   "",
-  "",
-  "md:col-span-2",
   "md:col-span-2",
 ];
 const COLORS = [
@@ -52,6 +52,13 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
+function dispatchFilesDropped(files: File[], slotId: number) {
+  const event = new CustomEvent("filesDropped", {
+    detail: { files, slotId },
+  });
+  window.dispatchEvent(event);
+}
+
 export default function DropSlots({
   drops,
   identity,
@@ -61,6 +68,8 @@ export default function DropSlots({
   drops.forEach((drop) => {
     slotMap[drop.slotId] = drop;
   });
+
+  const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-1 auto-rows-[5.75rem] grid-flow-dense pb-1">
@@ -137,14 +146,26 @@ export default function DropSlots({
                   );
                   const files = Array.from(e.dataTransfer.files);
                   if (files.length > 0) {
-                    const event = new CustomEvent("filesDropped", {
-                      detail: { files, slotId },
-                    });
-                    window.dispatchEvent(event);
+                    dispatchFilesDropped(files, slotId);
                   }
                 }}
-                className="h-full rounded-lg border-2 border-dashed border-slate-700 p-2 flex flex-col items-center justify-center hover:border-slate-500 transition cursor-pointer"
+                onClick={() => fileInputRefs.current[slotId]?.click()}
+                className="h-full rounded-lg border-2 border-dashed border-slate-700 p-2 flex flex-col items-center justify-center hover:border-slate-500 active:border-sky-500 active:bg-slate-800 transition cursor-pointer"
               >
+                <input
+                  ref={(el) => {
+                    fileInputRefs.current[slotId] = el;
+                  }}
+                  type="file"
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    if (files.length > 0) {
+                      dispatchFilesDropped(files, slotId);
+                    }
+                    e.target.value = "";
+                  }}
+                />
                 <svg
                   className="w-5 h-5 text-slate-400 mb-2"
                   fill="none"
@@ -158,6 +179,9 @@ export default function DropSlots({
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   />
                 </svg>
+                <span className="text-[10px] text-slate-500 text-center leading-tight">
+                  Tap or drop
+                </span>
               </div>
             )}
           </div>

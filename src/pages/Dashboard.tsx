@@ -212,11 +212,10 @@ export default function Dashboard({ identity }: DashboardProps) {
                 Drop Zone ({drops?.length || 0}/12)
               </h2>
               <p className="text-sm text-slate-400 max-w-xl">
-                Drop files into open slots and everyone sees them in the same
-                place.
+                Drop files into open slots
               </p>
             </div>
-            {((transferHistory?.length || 0) > 0 ||
+            {((transferHistory?.length || 0) == 0 ||
               receivedFiles.length > 0) && (
               <div className="space-y-2 mb-4">
                 {transferHistory && transferHistory.length > 0 && (
