@@ -1,14 +1,11 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-
-// WebRTC Signaling
-
 export const sendSignaling = mutation({
   args: {
     fromSessionId: v.string(),
     toSessionId: v.string(),
-    message: v.string(), // JSON stringified signaling message
+    message: v.string(),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("signaling", {
