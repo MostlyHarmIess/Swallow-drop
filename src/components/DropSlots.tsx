@@ -13,6 +13,7 @@ type DropSlotsProps = {
   drops: Drop[];
   identity: Identity;
   onClaim: (dropId: string) => void;
+  onCancel: (dropId: string) => void;
 };
 
 const TOTAL_SLOTS = 16; 
@@ -28,7 +29,13 @@ const SLOT_LAYOUTS = [
   "md:col-span-1 md:row-span-2",
   "",
   "md:col-span-2",
+  "",
+  "",
+  "",
+  "",
+  "",
 ];
+
 const COLORS = [
   "#6366f1",
   "#ec4899",
@@ -40,8 +47,12 @@ const COLORS = [
   "#0ea5e9",
   "#a855f7",
   "#f97316",
-  "#14b8a6",
   "#e11d48",
+  "#06b6d4",
+  "#84cc16",
+  "#d946ef",
+  "#10b981",
+  "#3b82f6",
 ];
 
 function formatFileSize(bytes: number): string {
@@ -63,6 +74,7 @@ export default function DropSlots({
   drops,
   identity,
   onClaim,
+  onCancel,
 }: DropSlotsProps) {
   const slotMap: Record<number, Drop | undefined> = {};
   drops.forEach((drop) => {
@@ -106,9 +118,12 @@ export default function DropSlots({
                 </div>
 
                 {isOwner ? (
-                  <div className="mt-2 px-2 py-1 bg-slate-200 text-slate-700 rounded text-xs font-medium text-center">
-                    Your file
-                  </div>
+                  <button
+                    onClick={() => onCancel(drop._id)}
+                    className="mt-2 w-full px-2 py-1 bg-slate-600 text-slate-200 rounded text-xs font-medium hover:bg-red-500 hover:text-white transition"
+                  >
+                    Cancel
+                  </button>
                 ) : (
                   <button
                     onClick={() => onClaim(drop._id)}

@@ -22,7 +22,6 @@ export const upsert = mutation({
       await ctx.db.insert("presence", { ...args, lastSeen: now });
     }
 
-    // Schedule cleanup 50s from now (just past the 45s cutoff)
     await ctx.scheduler.runAfter(50000, internal.presence.cleanupSession, {
       sessionId: args.sessionId,
       heartbeatTime: now,
@@ -41,10 +40,8 @@ export const cleanupSession = internalMutation({
       .filter((q) => q.eq(q.field("sessionId"), args.sessionId))
       .first();
 
-    // If lastSeen hasn't advanced since this heartbeat fired, session is dead
     if (!presence || presence.lastSeen !== args.heartbeatTime) return;
 
-    // Delete their drops
     const drops = await ctx.db
       .query("drops")
       .filter((q) => q.eq(q.field("senderSessionId"), args.sessionId))
@@ -54,7 +51,6 @@ export const cleanupSession = internalMutation({
       await ctx.db.delete(drop._id);
     }
 
-    // Remove presence
     await ctx.db.delete(presence._id);
   },
 });
@@ -68,7 +64,6 @@ export const remove = mutation({
       .first();
     if (existing) await ctx.db.delete(existing._id);
 
-    // Also clean up drops immediately on explicit disconnect
     const drops = await ctx.db
       .query("drops")
       .filter((q) => q.eq(q.field("senderSessionId"), args.sessionId))

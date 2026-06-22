@@ -26,3 +26,17 @@ export const create = mutation({
     });
   },
 });
+
+export const remove = mutation({
+  args: { dropId: v.id("drops") },
+  handler: async (ctx, args) => {
+    const claims = await ctx.db
+      .query("claims")
+      .filter((q) => q.eq(q.field("dropId"), args.dropId))
+      .collect();
+    for (const claim of claims) {
+      await ctx.db.delete(claim._id);
+    }
+    await ctx.db.delete(args.dropId);
+  },
+});

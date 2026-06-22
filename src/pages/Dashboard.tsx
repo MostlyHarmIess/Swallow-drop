@@ -23,6 +23,7 @@ export default function Dashboard({ identity }: DashboardProps) {
   const upsertPresence = useMutation(api.presence.upsert);
   const removePresence = useMutation(api.presence.remove);
   const createDrop = useMutation(api.drops.create);
+  const removeDrop = useMutation(api.drops.remove);
   const createClaim = useMutation(api.claims.create);
   const updateClaimStatus = useMutation(api.claims.updateStatus);
   const createTransferHistory = useMutation(api.transferHistory.create);
@@ -34,6 +35,7 @@ export default function Dashboard({ identity }: DashboardProps) {
   const senderClaims = useQuery(api.claims.listForSender, {
     senderSessionId: identity.sessionId,
   });
+  
 
   const [localFiles, setLocalFiles] = useState<Record<string, File>>({});
   const [receivedFiles, setReceivedFiles] = useState<
@@ -169,7 +171,7 @@ export default function Dashboard({ identity }: DashboardProps) {
     };
 
     void processClaims();
-  }, [senderClaims, drops, localFiles, sendFile, updateClaimStatus]);
+  }, [senderClaims, localFiles, sendFile, updateClaimStatus]);
 
   const handleClaim = async (dropId: string) => {
     try {
@@ -183,6 +185,19 @@ export default function Dashboard({ identity }: DashboardProps) {
       alert("Error claiming file. Please try again.");
     }
   };
+
+  const handleCancel = async (dropId: string) => {
+  try {
+    await removeDrop({ dropId: dropId as DropId });
+    setLocalFiles((current) => {
+      const next = { ...current };
+      delete next[dropId];
+      return next;
+    });
+  } catch (error) {
+    console.error("Error cancelling drop:", error);
+  }
+};
 
   return (
     <div className="min-h-screen w-screen bg-slate-950 text-slate-100">
@@ -213,8 +228,7 @@ export default function Dashboard({ identity }: DashboardProps) {
                 Drop files into open slots
               </p>
             </div>
-            {((transferHistory?.length || 0) == 0 ||
-              receivedFiles.length > 0) && (
+            {(receivedFiles.length > 0) && (
               <div className="space-y-2 mb-4">
                 {receivedFiles.length > 0 && (
                   <div className="rounded-2xl bg-slate-800 p-3 text-sm text-slate-300">
@@ -247,6 +261,7 @@ export default function Dashboard({ identity }: DashboardProps) {
                 drops={drops || []}
                 identity={identity}
                 onClaim={handleClaim}
+                onCancel={handleCancel}
               />
             </div>
           </div>
