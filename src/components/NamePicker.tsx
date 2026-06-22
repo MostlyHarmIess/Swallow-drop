@@ -36,7 +36,7 @@ export default function NamePicker({ onChoose }: Props) {
             Who are you?
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+        <CardContent className="flex flex-col gap-4 text-white">
           <Input
             placeholder="Your name"
             value={name}
