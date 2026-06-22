@@ -4,10 +4,7 @@ import { v } from "convex/values";
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
-      .query("drops")
-      .filter((q) => q.eq(q.field("status"), "available"))
-      .collect();
+    return await ctx.db.query("drops").collect();
   },
 });
 
@@ -26,21 +23,6 @@ export const create = mutation({
   handler: async (ctx, args) => {
     return await ctx.db.insert("drops", {
       ...args,
-      status: "available",
     });
-  },
-});
-
-export const markOffline = mutation({
-  args: { senderSessionId: v.string() },
-  handler: async (ctx, args) => {
-    const drops = await ctx.db
-      .query("drops")
-      .filter((q) => q.eq(q.field("senderSessionId"), args.senderSessionId))
-      .collect();
-
-    for (const drop of drops) {
-      await ctx.db.patch(drop._id, { status: "offline" });
-    }
   },
 });

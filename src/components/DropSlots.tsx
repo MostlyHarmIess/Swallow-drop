@@ -109,10 +109,6 @@ export default function DropSlots({
                   <div className="mt-2 px-2 py-1 bg-slate-200 text-slate-700 rounded text-xs font-medium text-center">
                     Your file
                   </div>
-                ) : drop.status === "offline" ? (
-                  <div className="mt-2 px-2 py-1 bg-slate-700 text-slate-300 rounded text-xs font-medium text-center">
-                    Sender offline
-                  </div>
                 ) : (
                   <button
                     onClick={() => onClaim(drop._id)}
@@ -123,7 +119,6 @@ export default function DropSlots({
                 )}
               </div>
             ) : (
-              // Empty slot
               <div
                 onDragOver={(e) => {
                   e.preventDefault();

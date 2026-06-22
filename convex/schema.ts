@@ -12,7 +12,6 @@ export default defineSchema({
     senderName: v.string(),
     senderSessionId: v.string(),
     slotId: v.number(),
-    status: v.union(v.literal("available"), v.literal("offline")),
   }),
 
   claims: defineTable({

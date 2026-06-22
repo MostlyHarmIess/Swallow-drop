@@ -44,7 +44,6 @@ export class PeerConnection {
       }
     };
 
-    // Handle incoming data channels (receiver side)
     this.pc.ondatachannel = (event) => {
       this.dataChannel = event.channel;
       this.setupDataChannelEvents();
@@ -111,7 +110,6 @@ export class PeerConnection {
     await this.pc.setRemoteDescription(new RTCSessionDescription(answer));
   }
 
-  // Add ICE candidate for NAT traversal
   async addIceCandidate(candidate: any) {
     try {
       await this.pc.addIceCandidate(new RTCIceCandidate(candidate));
@@ -127,7 +125,6 @@ export class PeerConnection {
     await this.channelReadyPromise;
   }
 
-  // Send file over data channel in chunks
   async sendFile(file: File) {
     await this.waitForChannelOpen();
 
@@ -135,7 +132,6 @@ export class PeerConnection {
       throw new Error("Data channel not open");
     }
 
-    // Send file metadata
     this.dataChannel.send(
       JSON.stringify({
         type: "file-start",
@@ -144,7 +140,6 @@ export class PeerConnection {
       }),
     );
 
-    // Send file in 64KB chunks
     const chunkSize = 64 * 1024;
     const buffer = await file.arrayBuffer();
     const view = new Uint8Array(buffer);
@@ -154,7 +149,6 @@ export class PeerConnection {
       this.dataChannel.send(chunk);
     }
 
-    // Signal end of file
     this.dataChannel.send(JSON.stringify({ type: "file-end" }));
   }
 

@@ -12,6 +12,7 @@ export function useWebRTC(
   onFileReceived: (file: File, fromSessionId: string) => void,
 ) {
   const peersRef = useRef<Map<string, PeerConnection>>(new Map());
+  const processingRef = useRef<Set<string>>(new Set());
   const sendSignaling = useMutation(api.webrtc.sendSignaling);
   const consumeMessage = useMutation(api.webrtc.consumeMessage);
   const signalingMessages = useQuery(api.webrtc.listForSession, {
@@ -82,12 +83,16 @@ export function useWebRTC(
 
     const processMessages = async () => {
       for (const signal of signalingMessages) {
+        if (processingRef.current.has(signal._id)) continue;
+        processingRef.current.add(signal._id);
+
         try {
           const message = JSON.parse(signal.message) as SignalingMessage;
           await handleSignalingMessage(signal.fromSessionId, message);
           await consumeMessage({ messageId: signal._id });
         } catch (error) {
           console.error("Error processing signaling message:", error);
+          processingRef.current.delete(signal._id);
         }
       }
     };

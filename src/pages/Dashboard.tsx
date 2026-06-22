@@ -22,7 +22,6 @@ type DashboardProps = {
 export default function Dashboard({ identity }: DashboardProps) {
   const upsertPresence = useMutation(api.presence.upsert);
   const removePresence = useMutation(api.presence.remove);
-  const markDropsOffline = useMutation(api.drops.markOffline);
   const createDrop = useMutation(api.drops.create);
   const createClaim = useMutation(api.claims.create);
   const updateClaimStatus = useMutation(api.claims.updateStatus);
@@ -77,9 +76,8 @@ export default function Dashboard({ identity }: DashboardProps) {
     return () => {
       clearInterval(interval);
       removePresence({ sessionId: identity.sessionId });
-      markDropsOffline({ senderSessionId: identity.sessionId });
     };
-  }, [identity, upsertPresence, removePresence, markDropsOffline]);
+  }, [identity, upsertPresence, removePresence]);
 
   useEffect(() => {
     const handleFilesDropped = async (event: Event) => {
