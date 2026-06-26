@@ -41,7 +41,17 @@ export class PeerConnection {
           type: "ice-candidate",
           candidate: event.candidate.toJSON(),
         }).catch(console.error);
+      } else {
+        console.log("ICE gathering complete — no more candidates");
       }
+    };
+
+    this.pc.onicecandidateerror = (event) => {
+      console.warn("ICE candidate error:", event.errorCode, event.errorText, event.url);
+    };
+
+    this.pc.onicegatheringstatechange = () => {
+      console.log("ICE gathering state:", this.pc.iceGatheringState);
     };
 
     this.pc.ondatachannel = (event) => {
@@ -50,7 +60,44 @@ export class PeerConnection {
     };
 
     this.pc.onconnectionstatechange = () => {
-      console.log("WebRTC connection state:", this.pc.connectionState);
+      const state = this.pc.connectionState;
+      switch (state) {
+        case "connected":
+          console.log("WebRTC connected");
+          break;
+        case "disconnected":
+          console.warn("WebRTC disconnected — peer may have gone offline");
+          break;
+        case "failed":
+          console.error("WebRTC failed — no viable path between peers, TURN may be required");
+          break;
+        case "closed":
+          console.log("WebRTC connection closed");
+          break;
+        default:
+          console.log("WebRTC connection state:", state);
+      }
+    };
+
+    this.pc.oniceconnectionstatechange = () => {
+      const state = this.pc.iceConnectionState;
+      switch (state) {
+        case "connected":
+        case "completed":
+          console.log("ICE connected");
+          break;
+        case "disconnected":
+          console.warn("ICE disconnected — attempting to reconnect...");
+          break;
+        case "failed":
+          console.error("ICE failed — no viable network path found between peers");
+          break;
+        case "closed":
+          console.log("ICE closed");
+          break;
+        default:
+          console.log("ICE connection state:", state);
+      }
     };
   }
 
@@ -63,7 +110,6 @@ export class PeerConnection {
     };
 
     this.dataChannel.onmessage = (event) => {
-      // Handle metadata messages
       if (typeof event.data === "string") {
         const msg = JSON.parse(event.data);
         if (msg.type === "file-start") {
@@ -119,10 +165,14 @@ export class PeerConnection {
   }
 
   private async waitForChannelOpen() {
-    if (!this.dataChannel || this.dataChannel.readyState === "open") {
-      return;
-    }
-    await this.channelReadyPromise;
+    if (this.dataChannel?.readyState === "open") return;
+
+    await Promise.race([
+      this.channelReadyPromise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Channel open timeout")), 30000)
+      ),
+    ]);
   }
 
   async sendFile(file: File) {
@@ -145,6 +195,9 @@ export class PeerConnection {
     const view = new Uint8Array(buffer);
 
     for (let i = 0; i < view.length; i += chunkSize) {
+      while (this.dataChannel.bufferedAmount > 16 * 1024 * 1024) {
+        await new Promise((r) => setTimeout(r, 50));
+      }
       const chunk = view.slice(i, i + chunkSize);
       this.dataChannel.send(chunk);
     }
