@@ -20,8 +20,14 @@ export class PeerConnection {
       iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun.relay.metered.ca:80" },
         {
           urls: `turn:${import.meta.env.VITE_TURN_HOST}:80`,
+          username: import.meta.env.VITE_TURN_USERNAME,
+          credential: import.meta.env.VITE_TURN_CREDENTIAL,
+        },
+        {
+          urls: `turn:${import.meta.env.VITE_TURN_HOST}:80?transport=tcp`,
           username: import.meta.env.VITE_TURN_USERNAME,
           credential: import.meta.env.VITE_TURN_CREDENTIAL,
         },
@@ -31,7 +37,7 @@ export class PeerConnection {
           credential: import.meta.env.VITE_TURN_CREDENTIAL,
         },
         {
-          urls: `turns:${import.meta.env.VITE_TURN_HOST}:443`,
+          urls: `turns:${import.meta.env.VITE_TURN_HOST}:443?transport=tcp`,
           username: import.meta.env.VITE_TURN_USERNAME,
           credential: import.meta.env.VITE_TURN_CREDENTIAL,
         },
