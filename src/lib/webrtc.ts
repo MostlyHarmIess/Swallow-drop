@@ -13,20 +13,32 @@ export class PeerConnection {
   private resolveChannelReady?: () => void;
   private onMessage: (message: SignalingMessage) => Promise<void>;
 
-  constructor(
-    onMessage: (message: SignalingMessage) => Promise<void>,
-    onFileReceived?: (file: File) => void,
-  ) {
+  constructor(onMessage: (message: SignalingMessage) => Promise<void>, onFileReceived?: (file: File) => void) {
     this.onMessage = onMessage;
     this.onFileReceived = onFileReceived;
     this.pc = new RTCPeerConnection({
       iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
+        {
+          urls: `turn:${import.meta.env.VITE_TURN_HOST}:80`,
+          username: import.meta.env.VITE_TURN_USERNAME,
+          credential: import.meta.env.VITE_TURN_CREDENTIAL,
+        },
+        {
+          urls: `turn:${import.meta.env.VITE_TURN_HOST}:443`,
+          username: import.meta.env.VITE_TURN_USERNAME,
+          credential: import.meta.env.VITE_TURN_CREDENTIAL,
+        },
+        {
+          urls: `turns:${import.meta.env.VITE_TURN_HOST}:443`,
+          username: import.meta.env.VITE_TURN_USERNAME,
+          credential: import.meta.env.VITE_TURN_CREDENTIAL,
+        },
       ],
     });
 
-    this.channelReadyPromise = new Promise((resolve) => {
+    this.channelReadyPromise = new Promise(resolve => {
       this.resolveChannelReady = resolve;
     });
 
@@ -35,7 +47,7 @@ export class PeerConnection {
 
   private setupPeerEvents() {
     // Handle ICE candidates for NAT traversal
-    this.pc.onicecandidate = (event) => {
+    this.pc.onicecandidate = event => {
       if (event.candidate) {
         this.onMessage({
           type: "ice-candidate",
@@ -46,7 +58,7 @@ export class PeerConnection {
       }
     };
 
-    this.pc.onicecandidateerror = (event) => {
+    this.pc.onicecandidateerror = event => {
       console.warn("ICE candidate error:", event.errorCode, event.errorText, event.url);
     };
 
@@ -54,7 +66,7 @@ export class PeerConnection {
       console.log("ICE gathering state:", this.pc.iceGatheringState);
     };
 
-    this.pc.ondatachannel = (event) => {
+    this.pc.ondatachannel = event => {
       this.dataChannel = event.channel;
       this.setupDataChannelEvents();
     };
@@ -109,7 +121,7 @@ export class PeerConnection {
       this.resolveChannelReady?.();
     };
 
-    this.dataChannel.onmessage = (event) => {
+    this.dataChannel.onmessage = event => {
       if (typeof event.data === "string") {
         const msg = JSON.parse(event.data);
         if (msg.type === "file-start") {
@@ -123,7 +135,7 @@ export class PeerConnection {
       }
     };
 
-    this.dataChannel.onerror = (event) => {
+    this.dataChannel.onerror = event => {
       console.error("Data channel error:", event);
     };
 
@@ -169,9 +181,7 @@ export class PeerConnection {
 
     await Promise.race([
       this.channelReadyPromise,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Channel open timeout")), 30000)
-      ),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Channel open timeout")), 30000)),
     ]);
   }
 
@@ -187,7 +197,7 @@ export class PeerConnection {
         type: "file-start",
         name: file.name,
         size: file.size,
-      }),
+      })
     );
 
     const chunkSize = 64 * 1024;
@@ -196,7 +206,7 @@ export class PeerConnection {
 
     for (let i = 0; i < view.length; i += chunkSize) {
       while (this.dataChannel.bufferedAmount > 16 * 1024 * 1024) {
-        await new Promise((r) => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 50));
       }
       const chunk = view.slice(i, i + chunkSize);
       this.dataChannel.send(chunk);

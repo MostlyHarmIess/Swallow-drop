@@ -40,7 +40,7 @@ SwallowDrop uses WebRTC for transfers. Connection quality depends on the network
 |---|---|
 | Same network | 20–50 MB/s |
 | Different networks (home broadband) | 1–2.5 MB/s |
-| Relayed via TURN | 0.1–0.6 MB/s |
+| Relayed via TURN | N/A |
 
 Transfers between peers on the same network are fully local. For cross-network transfers, a STUN server is used to attempt a direct connection. If that fails (e.g. mobile data, restrictive NAT), a TURN relay is required.
 
@@ -76,5 +76,5 @@ The app will be available at `http://localhost:5173`.
 
 - Transfers require both sender and receiver to be online simultaneously
 - If the sender closes their tab mid-transfer, the transfer will fail
-- TURN relay is required for reliable cross-network transfers (e.g. mobile data)
+- If TURN relay is required transfer will fail, as 
 - No file persistence, drops are tied to the sender's session

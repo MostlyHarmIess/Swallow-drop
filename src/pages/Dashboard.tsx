@@ -35,12 +35,9 @@ export default function Dashboard({ identity }: DashboardProps) {
   const senderClaims = useQuery(api.claims.listForSender, {
     senderSessionId: identity.sessionId,
   });
-  
 
   const [localFiles, setLocalFiles] = useState<Record<string, File>>({});
-  const [receivedFiles, setReceivedFiles] = useState<
-    Array<{ file: File; from: string }>
-  >([]);
+  const [receivedFiles, setReceivedFiles] = useState<Array<{ file: File; from: string }>>([]);
   const processedClaimsRef = useRef(new Set<string>());
 
   const downloadReceivedFile = (file: File) => {
@@ -53,10 +50,7 @@ export default function Dashboard({ identity }: DashboardProps) {
   };
 
   const { sendFile } = useWebRTC(identity.sessionId, (file, fromSessionId) => {
-    setReceivedFiles((existing) => [
-      { file, from: fromSessionId },
-      ...existing,
-    ]);
+    setReceivedFiles(existing => [{ file, from: fromSessionId }, ...existing]);
     downloadReceivedFile(file);
   });
 
@@ -101,7 +95,7 @@ export default function Dashboard({ identity }: DashboardProps) {
           slotId,
         });
 
-        setLocalFiles((current) => ({
+        setLocalFiles(current => ({
           ...current,
           [String(dropId)]: file,
         }));
@@ -125,10 +119,7 @@ export default function Dashboard({ identity }: DashboardProps) {
 
         const file = localFiles[String(claim.dropId)];
         if (!file) {
-          console.warn(
-            "No local file available for claimed drop",
-            claim.dropId,
-          );
+          console.warn("No local file available for claimed drop", claim.dropId);
           try {
             await updateClaimStatus({
               claimId: claim._id,
@@ -187,17 +178,17 @@ export default function Dashboard({ identity }: DashboardProps) {
   };
 
   const handleCancel = async (dropId: string) => {
-  try {
-    await removeDrop({ dropId: dropId as DropId });
-    setLocalFiles((current) => {
-      const next = { ...current };
-      delete next[dropId];
-      return next;
-    });
-  } catch (error) {
-    console.error("Error cancelling drop:", error);
-  }
-};
+    try {
+      await removeDrop({ dropId: dropId as DropId });
+      setLocalFiles(current => {
+        const next = { ...current };
+        delete next[dropId];
+        return next;
+      });
+    } catch (error) {
+      console.error("Error cancelling drop:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen w-screen bg-slate-950 text-slate-100">
@@ -206,14 +197,9 @@ export default function Dashboard({ identity }: DashboardProps) {
           <div className="px-4 pt-4">
             <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:justify-between lg:items-start">
               <div>
-                <h1 className="text-4xl font-bold text-white mb-2">
-                  SwallowDrop
-                </h1>
+                <h1 className="text-4xl font-bold text-white mb-2">SwallowDrop</h1>
                 <p className="text-slate-400">
-                  Welcome,{" "}
-                  <span className="font-semibold text-white">
-                    {identity.name}
-                  </span>
+                  Welcome, <span className="font-semibold text-white">{identity.name}</span>
                 </p>
               </div>
             </div>
@@ -221,71 +207,46 @@ export default function Dashboard({ identity }: DashboardProps) {
 
           <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl shadow-slate-950/20 overflow-hidden px-4 pb-4">
             <div className="pt-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-white">
-                Drop Zone ({drops?.length || 0}/12)
-              </h2>
-              <p className="text-sm text-slate-400 max-w-xl">
-                Drop files into open slots
-              </p>
+              <h2 className="text-2xl font-semibold text-white">Drop Zone ({drops?.length || 0}/12)</h2>
+              <p className="text-sm text-slate-400 max-w-xl">Drop files into open slots</p>
             </div>
-            {(receivedFiles.length > 0) && (
+            {receivedFiles.length > 0 && (
               <div className="space-y-2 mb-4">
                 {receivedFiles.length > 0 && (
                   <div className="rounded-2xl bg-slate-800 p-3 text-sm text-slate-300">
-                    <div className="font-medium text-slate-100 mb-2">
-                      Recent files received
-                    </div>
+                    <div className="font-medium text-slate-100 mb-2">Recent files received</div>
                     <ul className="space-y-2">
-                      {receivedFiles
-                        .slice(0, 3)
-                        .map(({ file, from }, index) => (
-                          <li
-                            key={index}
-                            className="flex items-center justify-between gap-3"
-                          >
-                            <div className="min-w-0">
-                              <p className="truncate">{file.name}</p>
-                              <p className="text-xs text-slate-400">
-                                From {from}
-                              </p>
-                            </div>
-                          </li>
-                        ))}
+                      {receivedFiles.slice(0, 3).map(({ file, from }, index) => (
+                        <li key={index} className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate">{file.name}</p>
+                            <p className="text-xs text-slate-400">From {from}</p>
+                          </div>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
               </div>
             )}
             <div>
-              <DropSlots
-                drops={drops || []}
-                identity={identity}
-                onClaim={handleClaim}
-                onCancel={handleCancel}
-              />
+              <DropSlots drops={drops || []} identity={identity} onClaim={handleClaim} onCancel={handleCancel} />
             </div>
           </div>
         </div>
 
         <div className="px-4 pt-4 flex flex-col justify-center">
           <div className="bg-slate-900 rounded-3xl border border-slate-800 p-5 shadow-xl shadow-slate-900/20 mb-4">
-            <h3 className="text-sm font-semibold text-slate-100 mb-3">
-              Online Now ({onlineUsers?.length || 0})
-            </h3>
+            <h3 className="text-sm font-semibold text-slate-100 mb-3">Online Now ({onlineUsers?.length || 0})</h3>
             <div className="space-y-2">
               {onlineUsers && onlineUsers.length > 0 ? (
-                onlineUsers.map((user) => (
+                onlineUsers.map(user => (
                   <div
                     key={user.sessionId}
                     className="flex items-center gap-2 p-2 rounded-2xl hover:bg-slate-900 transition"
                   >
-                    <div
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: user.color }}
-                    />
-                    <span className="text-xs font-medium text-slate-100">
-                      {user.name}
-                    </span>
+                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: user.color }} />
+                    <span className="text-xs font-medium text-slate-100">{user.name}</span>
                   </div>
                 ))
               ) : (
@@ -309,9 +270,7 @@ export default function Dashboard({ identity }: DashboardProps) {
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-slate-500">
-                  No transfers completed yet.
-                </p>
+                <p className="text-xs text-slate-500">No transfers completed yet.</p>
               )}
             </div>
           </div>

@@ -7,10 +7,7 @@ import { PeerConnection, type SignalingMessage } from "@/lib/webrtc";
  * Hook to manage WebRTC file transfers
  * Handles peer connections, signaling, and file exchange
  */
-export function useWebRTC(
-  sessionId: string,
-  onFileReceived: (file: File, fromSessionId: string) => void,
-) {
+export function useWebRTC(sessionId: string, onFileReceived: (file: File, fromSessionId: string) => void) {
   const peersRef = useRef<Map<string, PeerConnection>>(new Map());
   const processingRef = useRef<Set<string>>(new Set());
   const sendSignaling = useMutation(api.webrtc.sendSignaling);
@@ -38,13 +35,13 @@ export function useWebRTC(
         }
       };
 
-      const peer = new PeerConnection(onMessage, (file) => {
+      const peer = new PeerConnection(onMessage, file => {
         onFileReceived(file, peerId);
       });
       peersRef.current.set(peerId, peer);
       return peer;
     },
-    [sessionId, sendSignaling, onFileReceived],
+    [sessionId, sendSignaling, onFileReceived]
   );
 
   const handleSignalingMessage = useCallback(
@@ -75,7 +72,7 @@ export function useWebRTC(
         console.error("Error handling signaling message:", error);
       }
     },
-    [createPeerConnection, sessionId, sendSignaling],
+    [createPeerConnection, sessionId, sendSignaling]
   );
 
   useEffect(() => {
@@ -122,7 +119,7 @@ export function useWebRTC(
         throw error;
       }
     },
-    [createPeerConnection, sessionId, sendSignaling],
+    [createPeerConnection, sessionId, sendSignaling]
   );
 
   const closePeerConnection = useCallback((peerId: string) => {

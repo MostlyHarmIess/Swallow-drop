@@ -6,7 +6,7 @@ export const create = mutation({
     fileName: v.string(),
     from: v.string(),
     to: v.string(),
-    createdAt: v.number(),
+    createdAt: v.number(),  
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("transferHistory", {

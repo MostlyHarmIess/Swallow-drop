@@ -16,7 +16,7 @@ type DropSlotsProps = {
   onCancel: (dropId: string) => void;
 };
 
-const TOTAL_SLOTS = 16; 
+const TOTAL_SLOTS = 16;
 const SLOT_LAYOUTS = [
   "md:row-span-2",
   "md:row-span-2",
@@ -70,14 +70,9 @@ function dispatchFilesDropped(files: File[], slotId: number) {
   window.dispatchEvent(event);
 }
 
-export default function DropSlots({
-  drops,
-  identity,
-  onClaim,
-  onCancel,
-}: DropSlotsProps) {
+export default function DropSlots({ drops, identity, onClaim, onCancel }: DropSlotsProps) {
   const slotMap: Record<number, Drop | undefined> = {};
-  drops.forEach((drop) => {
+  drops.forEach(drop => {
     slotMap[drop.slotId] = drop;
   });
 
@@ -96,25 +91,15 @@ export default function DropSlots({
                 className="h-full rounded-lg border-2 p-2 flex flex-col justify-between hover:shadow-2xl hover:shadow-slate-950 transition-shadow cursor-pointer"
                 style={{
                   backgroundColor:
-                    drop.senderSessionId === identity.sessionId
-                      ? "#0f172a"
-                      : COLORS[slotId % COLORS.length] + "15",
+                    drop.senderSessionId === identity.sessionId ? "#0f172a" : COLORS[slotId % COLORS.length] + "15",
                   borderColor:
-                    drop.senderSessionId === identity.sessionId
-                      ? "#334155"
-                      : COLORS[slotId % COLORS.length] + "80",
+                    drop.senderSessionId === identity.sessionId ? "#334155" : COLORS[slotId % COLORS.length] + "80",
                 }}
               >
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-slate-100 truncate text-sm">
-                    {drop.originalName}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {drop.senderName}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {formatFileSize(drop.fileSize)}
-                  </p>
+                  <p className="font-semibold text-slate-100 truncate text-sm">{drop.originalName}</p>
+                  <p className="text-xs text-slate-400 mt-1">{drop.senderName}</p>
+                  <p className="text-xs text-slate-500">{formatFileSize(drop.fileSize)}</p>
                 </div>
 
                 {isOwner ? (
@@ -135,25 +120,16 @@ export default function DropSlots({
               </div>
             ) : (
               <div
-                onDragOver={(e) => {
+                onDragOver={e => {
                   e.preventDefault();
-                  e.currentTarget.classList.add(
-                    "border-sky-500",
-                    "bg-slate-800",
-                  );
+                  e.currentTarget.classList.add("border-sky-500", "bg-slate-800");
                 }}
-                onDragLeave={(e) => {
-                  e.currentTarget.classList.remove(
-                    "border-sky-500",
-                    "bg-slate-800",
-                  );
+                onDragLeave={e => {
+                  e.currentTarget.classList.remove("border-sky-500", "bg-slate-800");
                 }}
-                onDrop={(e) => {
+                onDrop={e => {
                   e.preventDefault();
-                  e.currentTarget.classList.remove(
-                    "border-sky-500",
-                    "bg-slate-800",
-                  );
+                  e.currentTarget.classList.remove("border-sky-500", "bg-slate-800");
                   const files = Array.from(e.dataTransfer.files);
                   if (files.length > 0) {
                     dispatchFilesDropped(files, slotId);
@@ -163,12 +139,12 @@ export default function DropSlots({
                 className="h-full rounded-lg border-2 border-dashed border-slate-700 p-2 flex flex-col items-center justify-center hover:border-slate-500 active:border-sky-500 active:bg-slate-800 transition cursor-pointer"
               >
                 <input
-                  ref={(el) => {
+                  ref={el => {
                     fileInputRefs.current[slotId] = el;
                   }}
                   type="file"
                   className="hidden"
-                  onChange={(e) => {
+                  onChange={e => {
                     const files = Array.from(e.target.files ?? []);
                     if (files.length > 0) {
                       dispatchFilesDropped(files, slotId);
@@ -176,12 +152,7 @@ export default function DropSlots({
                     e.target.value = "";
                   }}
                 />
-                <svg
-                  className="w-5 h-5 text-slate-400 mb-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-5 h-5 text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -189,9 +160,7 @@ export default function DropSlots({
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   />
                 </svg>
-                <span className="text-[10px] text-slate-500 text-center leading-tight">
-                  Tap or drop
-                </span>
+                <span className="text-[10px] text-slate-500 text-center leading-tight">Tap or drop</span>
               </div>
             )}
           </div>
